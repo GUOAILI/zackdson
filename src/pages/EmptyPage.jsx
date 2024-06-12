@@ -5,7 +5,7 @@ const EmptyLayout = () =>{
     const navigate=useNavigate();
 
     useEffect(() => {
-        navigate('/导航/分学科');
+        navigate('/nav/branch');
       }, []);
 }
 export default EmptyLayout

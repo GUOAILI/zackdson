@@ -6,7 +6,7 @@ function HomePage() {
   return (
     <div>
       <h1>蓝城市滨海区初高中学习辅助系统</h1>
-      <button type='submit' onClick={() => navigate('/导航')}>进入主题</button>
+      <button type='submit' onClick={() => navigate('/nav')}>进入主题</button>
     </div>
   );
 }

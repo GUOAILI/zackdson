@@ -1,5 +1,4 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { useState } from 'react';
 import {
   Button,
   Cascader,
@@ -16,6 +15,7 @@ import {
   TreeSelect,
   Upload,
 } from 'antd';
+import CustomWebcam from '../util/CustomWebcam';
 
 
 const { RangePicker } = DatePicker;
@@ -62,11 +62,17 @@ const sub2 =[
         desc:'作文点滴'
     },
     {
+        type:'wro',
+        desc:'错题入库'
+    },
+    {
         type:'rev',
         desc:'知识回顾'
     },
 ]
-const SubjectLayout=() =>{
+
+
+export default function SubjectLayout() {
     const subkey1 = localStorage.getItem('subkey1');
     const subkey2 = localStorage.getItem('subkey2');
     return (
@@ -180,9 +186,10 @@ const SubjectLayout=() =>{
                     <ColorPicker />
                 </Form.Item>
             </Form>
-
+            {/* 2024/06/12 */}
+            <CustomWebcam />
         </div>
     );
 }
 
-export default SubjectLayout;
+// export default SubjectLayout;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu,Button } from 'antd';
 const { Header, Content, Sider,Footer } = Layout;
 import {AppstoreOutlined, MailOutlined  } from '@ant-design/icons';
 import { Outlet } from 'react-router-dom';
@@ -41,6 +41,10 @@ const items = [
         {
           key: 'ch_wri',
           label: '作文'
+        },
+        {
+          key: 'ch_wro',
+          label: '错题入库'
         },
         {
           key: 'ch_rev',
@@ -95,14 +99,19 @@ const Nav = () => {
   const navigate = useNavigate();
   const [stateOpenKeys, setStateOpenKeys] = useState(['2', '23']);
   const [beforeSubject, setBeforeSubject] = useState(true);
-  const handleGuoailiBeigan =({key, keyPath, domEvent }) => {
-      
+
+  const handleGuoailiBeigan =({key }) => {
       const zpd=key.split('_');
       localStorage.setItem("subkey1",zpd[0]);
       localStorage.setItem("subkey2",zpd[1]);
       setBeforeSubject(false);
-      navigate('/导航/空');
+      navigate('/nav/empty');
   };
+
+  const handelSubjectManamementButton = () => {
+    setBeforeSubject(false);
+    navigate('/nav/manage');
+  }
   const onOpenChange = (openKeys) => {
   const currentOpenKey = openKeys.find((key) => stateOpenKeys.indexOf(key) === -1);
   // open
@@ -125,7 +134,11 @@ const Nav = () => {
   return (
         <Layout>
         <Sider width={256} style={{ minHeight: '100vh' }}>
-          <div style={{ height: '32px', background: 'rgba(255,255,255,.2)', margin: '16px' }} />
+          {/* <div style={{ height: '32px', background: 'rgba(255,255,255,.2)', margin: '16px' }} /> */}
+          <Button 
+            style={{ width:'80%', height: '32px', background: 'rgba(255,255,255,.2)', margin: '16px',color:'yellow',fontSize:'18px' }}
+            type='text' onClick={handelSubjectManamementButton}
+             >学科管理</Button>
           <Menu theme='dark'
             mode="inline"
             defaultSelectedKeys={['231']}
@@ -139,7 +152,16 @@ const Nav = () => {
           </Menu>
         </Sider>
         <Layout >
-          <Header style={{ background: '#fff', textAlign: 'center', padding: 0,color:'red' }}>我曾经看过山和大海，也穿过人山人海</Header>
+          <Header style={{ 
+                background: '#008000', 
+                textAlign: 'center', 
+                padding: 0,
+                color:'white', 
+                fontSize:'26px'
+            }}
+          >
+            我曾经看过山和大海，也穿过人山人海
+          </Header>
           <Content style={{ margin: '24px 16px 0' }}>
             <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
               {beforeSubject && <div>日夜脑未停留,心力用尽学丘</div>}
