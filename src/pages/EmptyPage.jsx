@@ -1,4 +1,4 @@
-import SubjectLayout from "./Subject";
+import SubjectLayout from "./SubjectBook";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 const EmptyLayout = () =>{

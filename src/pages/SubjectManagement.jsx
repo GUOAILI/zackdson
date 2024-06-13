@@ -8,21 +8,44 @@ const openNotificationWithIcon = (type, message, description) => notification[ty
 export async function action({ request }) {
     const formData=await request.formData();
     const updates = Object.fromEntries(formData);
-    if (!Object.keys(updates).length > 0) {
+    if (Object.keys(updates).length < 2) {
         openNotificationWithIcon("error","你至少要选择一个子分类!")
         return null;
     }
-    console.log("form data:",updates);
-    return redirect("/nav/empty");
+    // console.log("form data:",updates);
+    // 2024/6/13 thera are a lot of code try here to transform a array to anothre format
+    // console.log("after reformat of update:",JSON.stringify(updates));
+    let arr=[];
+    for(let obj in updates){
+        arr.push({
+            key:updates['subject']+obj,
+            label:updates[obj]
+        })
+    }
+    // console.log("object to array:",arr)
+
+    // const requestData=`${arr[0].value}guoaili${JSON.stringify(arr.slice(1))}`
+    const requestData={
+        subject:updates['subject'],
+        allsub:JSON.stringify(arr.slice(1))
+    }
+    try{
+        await UserService.updateOneSubject(requestData);
+        openNotificationWithIcon("success","设定成功!")
+        return redirect("/nav/");
+    }catch{
+        openNotificationWithIcon("error","设定失败!请联系管理员")
+        return null;
+    }
 }
 
 export default function SubjectManagement() {
     const {subjects} = useLoaderData();
-    const [subRadio,setSubRadio]=useState();
-    const [ganguo,setganguo]=useState([]);
+    const [branches,setBranches]=useState([]);
     const [xiaoguo,setXiaoguo]=useState([]);
     const [submittale,setSubmittale]=useState(true);
     const [ul1enable,setUl1enable]=useState(false);
+    const [isSubChecked,setIsSubChecked]=useState(false)
     // console.log(subjects);
 
     const handleCheckbox = (value) => {
@@ -33,44 +56,48 @@ export default function SubjectManagement() {
         async function httpRequestForBranchs(val) {
             try{
                 const guoaili=await UserService.getOneSubject(val);
-                if (guoaili.data.allsub) {
+                try{
+                    const resBranchs=await UserService.getAllBranches();
+                    let zhongguo=await resBranchs.data;
                     const abc=await JSON.parse(guoaili.data.allsub);
-                    setganguo(abc);
-                    setUl1enable(true);
-                }
+                    if (abc){
+                        let arrZpd=[];
+                        abc.forEach(aili=>{arrZpd.push(aili.label)});
+                        let arrLmj=[];
+                        zhongguo.forEach(item=>{
+                            if(!arrZpd.includes(item.chname)){
+                                arrLmj.push(item);
+                            }
+                        })
+                        setXiaoguo(arrLmj);
+                        setBranches(abc);
+                    }else{
+                        console.log('after filter:',zhongguo);
+                        setXiaoguo(zhongguo);
+                    }
+                setIsSubChecked(true);
+                setUl1enable(true);
             }
+                catch (ex) {
+                    alert("子分类查询异常!",ex);
+                }
+                }
             catch (ex) {
                 alert("查询主科目表异常error!"+ex);
-            }
-            try{
-                const resBranchs=await UserService.getAllBranchs();
-                let zhongguo=await resBranchs.data;
-                if (ganguo.length){
-                    ganguo.forEach(aili=>
-                        (zhongguo=zhongguo.filter(abc=>abc.name!==aili.name))
-                    )
-                    console.log('after filter:',zhongguo);
-                    setXiaoguo(zhongguo);
-                }else{
-                    console.log('after filter:',zhongguo);
-                    setXiaoguo(zhongguo);
-                }
-            }
-            catch (ex) {
-                alert("子分类查询异常!",ex);
             }
         }
         httpRequestForBranchs(value);
     }
     return (
         <>
+            <h1>==========   梅花香自苦寒来   ==========</h1>
             <h1 style={{color:'red'}}>
                 学科增减管理
             </h1>
             <h2>主学科</h2>
             {subjects.length ? (
-                <div>
-                <ul disabled={ul1enable}>
+                <Form method="post" >
+                <ul disabled={ul1enable} style={{listStyle:'none'}}>
                     {subjects.map(sub=> (
                         <li key={sub.name} >
                             <input 
@@ -97,19 +124,50 @@ export default function SubjectManagement() {
                             </label>
                     </li>
                 </ul>
+
+                {isSubChecked && (<div>
+
                 <hr />
-                <h2>内容分类</h2>
+                <h2>子分类</h2>
+                <h3>已经选过的子分类</h3>
+                {branches.length ? (
+                    <div>
+                        <ul style={{listStyle:'none'}}>
+                          {branches.map( sub => (
+                            <li key={sub.label}>
+                                <input 
+                                    type="checkbox"
+                                    id={sub.label}
+                                    name={sub.label}
+                                    value={sub.label}
+                                    onChange={e=>handleCheckbox(e.target.value)}
+                                    />
+                                <label>
+                                    {sub.label}
+                                </label>
+                            </li>
+                          ))}
+                        </ul>
+                        <hr/>
+                    </div>
+                ) : (
+                    <div>
+                    <label style={{color:'red'}}>尚未添加任何子分类</label>
+                    <hr />
+                    </div>
+                )
+                }
+                <h3>还没有选过的子分类</h3>
                 {xiaoguo.length ? 
                     (
-                    <Form method="post">
-                    <ul>
+                    <ul style={{listStyle:'none'}}>
                         {xiaoguo.map( sub => (
                             <li key={sub.name}>
                                 <input 
                                     type="checkbox"
-                                    id={sub.name}
-                                    name={sub.name}
-                                    value={sub.name}
+                                    id={sub.chname}
+                                    name={sub.chname}
+                                    value={sub.chname}
                                     onChange={e=>handleCheckbox(e.target.value)}
                                     />
                                 <label>
@@ -117,18 +175,18 @@ export default function SubjectManagement() {
                                 </label>
                             </li>
                         )
-
                         )}
                     </ul>
-                    <button type="submit" disabled={submittale} >提交</button>
-                    </Form>
                     )
                 : 
-                (<p>这里是二级分类,在科目选定后会显示</p>)
+                (<p style={{color:'red'}}>没有尚未添加的子类型了</p>)
                 }
-                </div>
+                <button type="submit" disabled={submittale} >提交</button>
+                </div>)}
+                </Form>
+
             ) : (
-                <p>
+                <p style={{color:'red'}}>
                     数据库中没有任何初始化用数据,请联系管理员。
                 </p> )
             }

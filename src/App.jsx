@@ -1,14 +1,21 @@
+
 import React from "react";
 import {
   createBrowserRouter,
   RouterProvider
 } from 'react-router-dom';
 import HomePage from './pages/Home';
-import Nav from './pages/Nav';
-import SubjectLayout from "./pages/Subject";
+import Nav,{loader as NavLoader} from './pages/Nav';
+import SubjectLayout from "./pages/SubjectBook";
 import EmptyLayout from "./pages/EmptyPage";
 // import SubjectManagement,{loader as subjectLoader} from "./pages/SubjectManagement";
 import SubjectManagement,{loader as subjectLoader, action as subjectAction} from "./pages/SubjectManagement";
+import SubjectTestLayout from "./pages/SubjectTest";
+import SubjectBookLayout from "./pages/SubjectBook";
+import SubjectExtLayout from "./pages/SubjectExt";
+import SubjectWritingLayout,{action as SubWritingAction} from "./pages/SubjectWriting";
+import SubjectWrongLayout from "./pages/SubjectWrong";
+import SubjectReviewLayout from "./pages/SubjectReview";
 
 const router = createBrowserRouter([
   {
@@ -21,8 +28,17 @@ const router = createBrowserRouter([
       path: '/nav',
       element: <Nav />,
       id: 'navigation',
+      loader: NavLoader,
       children: [
-      { path: '/nav/branch', element: <SubjectLayout /> },
+      { path: '/nav/branch1', element: <SubjectBookLayout /> },
+      { path: '/nav/branch2', element: <SubjectExtLayout /> },
+      { path: '/nav/branch3', 
+        element: <SubjectWritingLayout />,
+        action: SubWritingAction,
+      },
+      { path: '/nav/branch4', element: <SubjectWrongLayout /> },
+      { path: '/nav/branch5', element: <SubjectReviewLayout /> },
+      { path: '/nav/branch6', element: <SubjectTestLayout /> },
       { path: '/nav/empty', element: <EmptyLayout /> },
       { path: '/nav/manage', 
         element: <SubjectManagement />,
