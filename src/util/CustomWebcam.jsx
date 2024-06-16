@@ -1,8 +1,7 @@
-
 import Webcam from "react-webcam";
-import { useCallback, useRef,useState } from "react";
+import { useCallback, useRef,useState,useImperativeHandle,forwardRef } from "react";
 
-const CustomWebcam =()=>{
+const CustomWebcam =(props,ref)=>{
     const webcamRef = useRef(null);
     const [imgSrc,setImgSrc]=useState(null);
     const [mirrored,setMirrored]=useState(false);
@@ -11,7 +10,15 @@ const CustomWebcam =()=>{
     const capture = useCallback(() => {
         const imageSrc = webcamRef.current.getScreenshot();
         setImgSrc(imageSrc);
+        // 2024/6/15 add to share picture photo with father component
+        // lmj(imageSrc);
     },[webcamRef]);
+
+    useImperativeHandle(ref,()=>{
+        return {
+            mjddyz:imgSrc,
+        }
+    });
 
     const retake = () => {
         setImgSrc(null);
@@ -20,8 +27,8 @@ const CustomWebcam =()=>{
         <>
             <div>
                 {/* <input type="checkbox" checked={mirrored} onChange={e=>setMirrored(e.target.checked)} > */}
-                <input type="checkbox" checked={mirrored} onChange={e=>setMirrored(!mirrored)} />
-                <label>
+                <input type="checkbox" checked={mirrored} onChange={e=>setMirrored(!mirrored)} id='cwebcam1'/>
+                <label for='cwebcam1'>
                     是否水平镜像
                 </label>
             </div>
@@ -49,4 +56,4 @@ const CustomWebcam =()=>{
         </>
     );
 }
-export default CustomWebcam;
+export default forwardRef(CustomWebcam);

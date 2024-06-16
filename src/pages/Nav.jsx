@@ -29,85 +29,20 @@ export async function loader(){
         return items;
 
     }catch(ex){
-        openNotificationWithIcon("error","主科目取得异常,请联系管理员",ex);
+        // alert("主科目取得异常,请检查后端是否开启");
+        // openNotificationWithIcon("error","主科目取得异常,请联系管理员",ex);
         return null;
     }
 }
 
-// const items = [
-//     {
-//       key: 'ma',
-//       icon: <MailOutlined />,
-//       label: '数学',
-//       children: [
-//         {
-//           key: 'ma_nb',
-//           label: '课本',
-//         },
-//         {
-//           key: 'ma_ext',
-//           label: '课外课',
-//         },
-//         {
-//           key: 'ma_rev',
-//           label: '复习'
-//         },
-//       ],      
-//     },
-//     {
-//       key: 'ch',
-//       icon: <AppstoreOutlined />,
-//       label: '语文',
-//       children: [
-//         {
-//           key: 'ch_nb',
-//           label: '课本',
-//         },
-//         {
-//           key: 'ch_ext',
-//           label: '课外课',
-//         },
-//         {
-//           key: 'ch_wri',
-//           label: '作文'
-//         },
-//         {
-//           key: 'ch_wro',
-//           label: '错题入库'
-//         },
-//         {
-//           key: 'ch_rev',
-//           label: '复习'
-//         },
-//       ],
-//     },
-//     {
-//       key: 'en',
-//       icon: <AppstoreOutlined />,
-//       label: '英语',
-//       children: [
-//         {
-//           key: 'en_nb',
-//           label: '课本',
-//         },
-//         {
-//           key: 'en_ext',
-//           label: '课外课',
-//         },
-//         {
-//           key: 'en_wri',
-//           label: '作文'
-//         },
-//         {
-//           key: 'en_rev',
-//           label: '复习'
-//         },
-//       ],
-//     },
-// ];
 
 export default function Nav () {
     const items=useLoaderData();
+    if(!items){
+        // alert("main主科目取得异常,请检查后端是否开启");
+        // openNotificationWithIcon("error","主科目取得异常,请联系管理员",ex);
+      return null;
+    }
 
     const getLevelKeys = (items1) => {
         const key = {};
@@ -131,6 +66,13 @@ export default function Nav () {
     const [beforeSubject, setBeforeSubject] = useState(true);
 
   const handleGuoailiBeigan =({key }) => {
+
+    // 20240614 add here temporary
+    navigate('/nav/demo3');
+    // navigate('/nav/demo2');
+    // navigate('/nav/demo');
+    return null;
+
     let 江珊=String(key).slice(2);
     console.log('江珊=',江珊);
 

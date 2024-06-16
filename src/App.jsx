@@ -16,6 +16,9 @@ import SubjectExtLayout from "./pages/SubjectExt";
 import SubjectWritingLayout,{action as SubWritingAction} from "./pages/SubjectWriting";
 import SubjectWrongLayout from "./pages/SubjectWrong";
 import SubjectReviewLayout from "./pages/SubjectReview";
+import DemoLayout from "./FileOrImage/Demo";
+import DemoLayout002 from "./FileOrImage/Demo_002";
+import DemoLayout003 from "./FileOrImage/Demo_003";
 
 const router = createBrowserRouter([
   {
@@ -30,7 +33,12 @@ const router = createBrowserRouter([
       id: 'navigation',
       loader: NavLoader,
       children: [
-      { path: '/nav/branch1', element: <SubjectBookLayout /> },
+        // 临时测试用
+        { path: '/nav/demo', element: <DemoLayout /> },
+        { path: '/nav/demo2', element: <DemoLayout002 /> },
+        { path: '/nav/demo3', element: <DemoLayout003 /> },
+        // 
+        { path: '/nav/branch1', element: <SubjectBookLayout /> },
       { path: '/nav/branch2', element: <SubjectExtLayout /> },
       { path: '/nav/branch3', 
         element: <SubjectWritingLayout />,
