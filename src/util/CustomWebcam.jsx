@@ -28,7 +28,7 @@ const CustomWebcam =(props,ref)=>{
             <div>
                 {/* <input type="checkbox" checked={mirrored} onChange={e=>setMirrored(e.target.checked)} > */}
                 <input type="checkbox" checked={mirrored} onChange={e=>setMirrored(!mirrored)} id='cwebcam1'/>
-                <label for='cwebcam1'>
+                <label htmlFor='cwebcam1'>
                     是否水平镜像
                 </label>
             </div>

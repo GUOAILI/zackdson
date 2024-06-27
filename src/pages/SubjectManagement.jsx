@@ -1,24 +1,26 @@
-import UserService from "../util/userService";
+import { useState,useEffect } from "react";
 import { useLoaderData,Form,redirect} from "react-router-dom";
-import { useState } from "react";
-
+import UserService from "../util/userService";
 import { notification } from "antd";
+
 const openNotificationWithIcon = (type, message, description) => notification[type]({message, description});
 
 export async function action({ request }) {
     const formData=await request.formData();
     const updates = Object.fromEntries(formData);
-    if (Object.keys(updates).length < 2) {
+    const subject = localStorage.getItem('subject');
+    console.log("form data:",updates);
+    if (Object.keys(updates).length < 1) {
         openNotificationWithIcon("error","你至少要选择一个子分类!")
         return null;
     }
-    // console.log("form data:",updates);
     // 2024/6/13 thera are a lot of code try here to transform a array to anothre format
     // console.log("after reformat of update:",JSON.stringify(updates));
     let arr=[];
     for(let obj in updates){
         arr.push({
-            key:updates['subject']+obj,
+            key:subject+obj,
+            // key:updates['subject']+obj,
             label:updates[obj]
         })
     }
@@ -26,11 +28,15 @@ export async function action({ request }) {
 
     // const requestData=`${arr[0].value}guoaili${JSON.stringify(arr.slice(1))}`
     const requestData={
-        subject:updates['subject'],
-        allsub:JSON.stringify(arr.slice(1))
+        subject:subject,
+        // subject:updates['subject'],
+        // allsub:JSON.stringify(arr.slice(1))
+        // 2024/6/26 add
+        allsub:JSON.stringify(arr),
     }
     try{
-        await UserService.updateOneSubject(requestData);
+        // await UserService.updateOneSubject(requestData);
+        await UserService.updateOneInitDson(requestData);
         openNotificationWithIcon("success","设定成功!")
         return redirect("/nav/");
     }catch{
@@ -39,27 +45,46 @@ export async function action({ request }) {
     }
 }
 
+
 export default function SubjectManagement() {
-    const {subjects} = useLoaderData();
+    const [subjects,setSubject]=useState([]);
+    // const {subjects} = useLoaderData();
     const [branches,setBranches]=useState([]);
     const [xiaoguo,setXiaoguo]=useState([]);
-    const [submittale,setSubmittale]=useState(true);
-    const [ul1enable,setUl1enable]=useState(false);
-    const [isSubChecked,setIsSubChecked]=useState(false)
-    // console.log(subjects);
+    const [nosubmit,setNoSubmit]=useState(true);
+    const [zpddyz,setZpddyz]=useState(false);
+    const [isSubChecked,setIsSubChecked]=useState(false);
+
+    useEffect( ()=>{
+        async function zpd(){
+            try{
+                const restData = await UserService.getAllSubjects();
+                const zpddyz = await restData.data;
+                setSubject(zpddyz);
+                // console.log(subjects);
+                // return {subjects};
+            }catch(ex){
+                openNotificationWithIcon('error','后台获取学科信息失败，请检查后台是否启动，或者联系管理员');
+                // return null;
+            }
+        }
+        zpd();
+    },[]);
 
     const handleCheckbox = (value) => {
-        console.log("checkbox is:",value);
-        setSubmittale(false);
+        console.log("=SubjectManagment=checkbox is:",value);
+        setNoSubmit(false);
     }
     const handleRadioSelect = (value) => {
         async function httpRequestForBranchs(val) {
             try{
-                const guoaili=await UserService.getOneSubject(val);
+                // const guoaili=await UserService.getOneSubject(val);
+                const guoaili=await UserService.getOneInitDson(val);
                 try{
                     const resBranchs=await UserService.getAllBranches();
                     let zhongguo=await resBranchs.data;
-                    const abc=await JSON.parse(guoaili.data.allsub);
+                    let abc=null;
+                    if (guoaili.data) abc=await JSON.parse(guoaili.data.allsub);
                     if (abc){
                         let arrZpd=[];
                         abc.forEach(aili=>{arrZpd.push(aili.label)});
@@ -71,23 +96,32 @@ export default function SubjectManagement() {
                         })
                         setXiaoguo(arrLmj);
                         setBranches(abc);
+                        // setIsSubChecked(true);
+                        console.log('=SubjectManagment=after filter:',zhongguo);
                     }else{
-                        console.log('after filter:',zhongguo);
+                        console.log('=SubjectManagment=no existing subject for ',val);
+                        setXiaoguo(null);
                         setXiaoguo(zhongguo);
                     }
-                setIsSubChecked(true);
-                setUl1enable(true);
-            }
+                    setIsSubChecked(true);
+                }
                 catch (ex) {
-                    alert("子分类查询异常!",ex);
+                    // alert("子分类查询异常!",ex);
+                    openNotificationWithIcon("error","子分类查询异常!请联系管理员")
                 }
-                }
+            }
             catch (ex) {
-                alert("查询主科目表异常error!"+ex);
+                // alert("查询主科目表异常error!"+ex);
+                openNotificationWithIcon("error","查询主科目表异常!请联系管理员")
             }
         }
         httpRequestForBranchs(value);
-    }
+        localStorage.setItem('subject',value);
+        setZpddyz(true);
+}
+    // const handleRadioSelect = (value) => {
+    //     setZpddyz(true);
+    // }
     return (
         <>
             <h1>==========   梅花香自苦寒来   ==========</h1>
@@ -96,41 +130,42 @@ export default function SubjectManagement() {
             </h1>
             <h2>主学科</h2>
             {subjects.length ? (
-                <Form method="post" >
-                <ul disabled={ul1enable} style={{listStyle:'none'}}>
+              <Form method="post" >
+                  <ul style={{listStyle:'none'}}>
                     {subjects.map(sub=> (
                         <li key={sub.name} >
                             <input 
                                 type="radio"
+                                // at last,2024/6/25, the only correct disable way is here!
+                                disabled={zpddyz}
                                 id={sub.name}
                                 name="subject"
                                 value={sub.chname}
                                 onChange={e=>handleRadioSelect(e.target.value)}
                                  />
-                            <label>
+                            <label htmlFor={sub.name}>
                                 {sub.chname}
                             </label>
                         </li>
                     ))}
-                    <li key="other" >
+                    {/* <li key="other" >
                             <input 
                                 type="radio"
                                 id="other"
                                 name="subject"
                                 value="other"
                                  />
-                            <label>
+                            <label htmlFor='other'>
                                 其他(自定义)
                             </label>
-                    </li>
-                </ul>
-
-                {isSubChecked && (<div>
-
-                <hr />
-                <h2>子分类</h2>
-                <h3>已经选过的子分类</h3>
-                {branches.length ? (
+                    </li> */}
+                  </ul>
+                  {isSubChecked && (
+                  <div>
+                  <hr />
+                  <h2>子分类</h2>
+                  <h3>已经选过的子分类</h3>
+                  {branches.length ? (
                     <div>
                         <ul style={{listStyle:'none'}}>
                           {branches.map( sub => (
@@ -140,9 +175,13 @@ export default function SubjectManagement() {
                                     id={sub.label}
                                     name={sub.label}
                                     value={sub.label}
-                                    onChange={e=>handleCheckbox(e.target.value)}
+                                    checked
+                                    onChange={e=>{
+                                        e.target.checked=!e.target.checked
+                                        // setSubmittale(false);
+                                    }}
                                     />
-                                <label>
+                                <label  htmlFor={sub.label}>
                                     {sub.label}
                                 </label>
                             </li>
@@ -152,8 +191,8 @@ export default function SubjectManagement() {
                     </div>
                 ) : (
                     <div>
-                    <label style={{color:'red'}}>尚未添加任何子分类</label>
-                    <hr />
+                        <label style={{color:'red'}}>尚未添加任何子分类</label>
+                        <hr />
                     </div>
                 )
                 }
@@ -162,7 +201,7 @@ export default function SubjectManagement() {
                     (
                     <ul style={{listStyle:'none'}}>
                         {xiaoguo.map( sub => (
-                            <li key={sub.name}>
+                            <li key={sub.chname}>
                                 <input 
                                     type="checkbox"
                                     id={sub.chname}
@@ -170,7 +209,7 @@ export default function SubjectManagement() {
                                     value={sub.chname}
                                     onChange={e=>handleCheckbox(e.target.value)}
                                     />
-                                <label>
+                                <label  htmlFor={sub.chname}>
                                     {sub.chname}
                                 </label>
                             </li>
@@ -179,11 +218,12 @@ export default function SubjectManagement() {
                     </ul>
                     )
                 : 
-                (<p style={{color:'red'}}>没有尚未添加的子类型了</p>)
+                    (<p style={{color:'red'}}>没有尚未添加的子类型了</p>)
                 }
-                <button type="submit" disabled={submittale} >提交</button>
-                </div>)}
-                </Form>
+                <button type="submit" disabled={nosubmit} >提交</button>
+                </div>
+                )}
+              </Form>
 
             ) : (
                 <p style={{color:'red'}}>
@@ -195,9 +235,14 @@ export default function SubjectManagement() {
 }
 // export default SubjectManagement;
 
-export async function loader(){
-    const restData = await UserService.getAllSubjects();
-    const subjects = await restData.data;
-    // console.log(subjects);
-    return {subjects};
-}
+// export async function loader(){
+//     try{
+//         const restData = await UserService.getAllSubjects();
+//         const subjects = await restData.data;
+//         // console.log(subjects);
+//         return {subjects};
+//     }catch(ex){
+//         openNotificationWithIcon('error','后台获取学科信息失败，请检查后台是否启动，或者联系管理员');
+//         return null;
+//     }
+// }
