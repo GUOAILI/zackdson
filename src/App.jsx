@@ -1,7 +1,7 @@
-
 import React from "react";
 import {
   createBrowserRouter,
+  // createHashRouter,
   RouterProvider
 } from 'react-router-dom';
 import HomePage,{loader as HomeLoader} from './pages/Home';
