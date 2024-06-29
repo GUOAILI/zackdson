@@ -31,6 +31,9 @@ import ExamShow from "./form/ExamShow";
 import ReviewForm from "./form/ReviewForm";
 import ReviewList from "./form/ReviewList";
 import ReviewShow from "./form/ReviewShow";
+import WrongForm from "./form/WrongForm";
+import WrongShow from "./form/WrongShow";
+import WrongList from "./form/WrongList";
 // import GradeManagement,{loader as gradeLoader,action as gradeAction} from "./pages/GradeManagement";
 
 const router = createBrowserRouter([
@@ -105,6 +108,16 @@ const router = createBrowserRouter([
       },
       { path: '/nav/review/detail', 
         element: <ReviewShow />,
+      },
+      // 2024/6/29 add
+      { path: '/nav/wrong/list', 
+        element: <WrongList />,
+      },
+      { path: '/nav/wrong/input', 
+        element: <WrongForm />,
+      },
+      { path: '/nav/wrong/detail', 
+        element: <WrongShow />,
       },
      ],
 }

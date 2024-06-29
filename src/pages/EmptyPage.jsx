@@ -1,6 +1,6 @@
 import SubjectLayout from "./SubjectBook";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import React,{ useEffect } from "react";
 const EmptyLayout = () =>{
     const navigate=useNavigate();
     let 江珊=localStorage.getItem("branchDetail").slice(2);
@@ -17,7 +17,7 @@ const EmptyLayout = () =>{
           navigate('/nav/writing/list');
           break;
         case '错题积累':
-          navigate('/nav/branch4');
+          navigate('/nav/wrong/list');
           break;
         case '复习':
           navigate('/nav/review/list');

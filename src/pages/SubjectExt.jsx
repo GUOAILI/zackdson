@@ -15,6 +15,7 @@ import {
   TreeSelect,
   Upload,
 } from 'antd';
+import React from 'react';
 import CustomWebcam from '../util/CustomWebcam';
 
 

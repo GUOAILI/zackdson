@@ -48,6 +48,14 @@ const uploadFileAndSaveToReviewDb = (updData) => {
   }
 )};
 
+const uploadFileAndSaveToWrongDb = (updData) => {
+    return axios.post(API_FILE_URL + "baiduwenxin/wrong",updData,{
+      headers: {  
+        'Content-Type': 'multipart/form-data'  
+    }  
+  }
+)};
+
 
 const FileService = {
   getAllFiles,
@@ -57,6 +65,7 @@ const FileService = {
   uploadFileAndSaveToNotebookDb,
   uploadFileAndSaveToExamDb,
   uploadFileAndSaveToReviewDb,
+  uploadFileAndSaveToWrongDb,
 };
 
 export default FileService;

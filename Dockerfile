@@ -1,25 +1,14 @@
-FROM node:alpine
+# Start your image with a node base image
+FROM node:18-alpine
 
 # The /app directory should act as the main application directory
 WORKDIR /app
 
-# Copy the app package and package-lock.json file
-COPY package*.json ./
-# this is very important that wasted me 4 hours to exceed
-COPY index.html ./
-COPY vite.config.js ./
-
-# Copy local directories to the current local directory of our docker image (/app)
-COPY ./src ./src
-COPY ./public ./public
-
+COPY ./dist ./dist
 # Install node packages, install serve, build the app, and remove dependencies at the end
-RUN npm install
-    # && npm run build \
-    # && rm -fr node_modules
+RUN npm install -g serve
 
-EXPOSE 5173
+EXPOSE 3000
 
 # Start the app using serve command
-# CMD [ "serve", "-s", "build" ]
-CMD [ "npm", "run", "dev" ]
+CMD [ "serve", "-s", "dist" ]

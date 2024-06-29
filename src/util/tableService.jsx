@@ -39,6 +39,14 @@ const getAllReview = (subject) => {
 const delOneReview = (id) => {
   return axios.put(API_TABLE_URL + "review/delete"+`?id=${id}`);
 };
+// 2023/6/29
+const getAllWrong = (subject) => {
+  return axios.get(API_TABLE_URL + "wrong"+`?subject=${subject}`);
+};
+
+const delOneWrong = (id) => {
+  return axios.put(API_TABLE_URL + "wrong/delete"+`?id=${id}`);
+};
 
 const TableService = {
     getAllWriting,
@@ -49,6 +57,8 @@ const TableService = {
     delOneExam,
     getAllReview,
     delOneReview,
+    getAllWrong,
+    delOneWrong,
 };
 
 export default TableService;
