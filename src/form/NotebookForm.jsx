@@ -26,6 +26,7 @@ const NotebookForm = () => {
     });
     // 添加其他字段  
     formData.append('num', values.num);  
+    formData.append('keyword', values.keyword);  
     formData.append('easy', values.easy);  
     formData.append('point', values.point);  
     formData.append('teacher', values.teacher);  
@@ -54,14 +55,23 @@ const NotebookForm = () => {
       layout="vertical"
       initialValues={{ easy: 'medium' }}
       onFinish={onFinish}
+      scrollToFirstError
     >
       <Form.Item >
         <span style={{color: 'blue',marginRight: '8px' }}>第</span>
         <Form.Item name="num" noStyle rules={[{ required: true, message: '请输入课数!' }]}>
           <Input type="number" style={{ width: '8%' }} />
         </Form.Item>
-        <span style={{ color: 'blue',margin: '0 8px' }}>课</span>
+        <span style={{ color: 'blue',margin: '0 8px' }}>章(课)</span>
       </Form.Item>
+      <Form.Item  
+        name="keyword"  
+        label={<span style={{ color: 'blue' }}>主题</span>} 
+        rules={[{ required: true, message: '请输入本章主题!' }]}  
+      >  
+        <Input type="text" 
+            style={{ width: '50%'}}/>  
+      </Form.Item>  
       <Form.Item name="easy" label={<span style={{ color: 'blue' }}>难易度</span>}
         rules={[{ required: true, message: '请选择难易度!' }]}
       >

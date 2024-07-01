@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
-import { Layout, Menu,Button,Tooltip } from 'antd';
+import { Layout, Menu,Button,Tooltip,Modal,Form,Input } from 'antd';
 const { Header, Content, Sider,Footer } = Layout;
-import { Outlet,redirect } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useNavigate,useLoaderData } from 'react-router-dom';
 import UserService from '../util/userService';
 import { notification } from "antd";
+import { tokenLoader } from '../util/authentication';
 import { LogoutOutlined,UserOutlined,ToolOutlined,CheckCircleOutlined,AppstoreOutlined } from '@ant-design/icons';
 
 const openNotificationWithIcon = (type, message, description) => notification[type]({message, description});
 
 export async function loader(){
+    // look if the token is expired!
+    tokenLoader();
     try {
       // 2024/6/24 此处需要修改，根据年级抽取科目getInitSetting()
         // const restData = await UserService.getAllSubjects();
         const restData = await UserService.getInitDson();
         const subjects = await restData.data;
         console.log('=nav=,subjects=',subjects);
-        let guoaili=subjects.filter(xg=>xg.allsub !== null);
+        let guoaili=subjects.filter(xg=>xg.allsub !== null && xg.allsub.length>2);
         console.log('=nav=guoaili length:',guoaili.length);
 
         // 2024/6/24 if no subject and subtype available,go to the congfig page.
@@ -78,6 +81,8 @@ export default function Nav () {
     const [stateOpenKeys, setStateOpenKeys] = useState([]);
     // 导航页面nav显示时，显示 【日夜脑未停留,心力用尽学丘】用
     const [beforeSubject, setBeforeSubject] = useState(true);
+    const [visible,setVisible]=useState(false);
+    const [zpddyz,setZpddyz]=useState({});
 
   const handleGuoailiBeigan =({key }) => {
     // 20240614 add here temporary for testing upload files and images
@@ -90,38 +95,25 @@ export default function Nav () {
     // let 江珊=String(key).slice(2);
     // console.log('江珊=',江珊);
     localStorage.setItem("branchDetail",key);
-    // switch (江珊) {
-    //     // 1 notebook 2 outer school extension 3 writing 4 get wrong questions 5 overall review 6 test problems
-    //     case '课本':
-    //       navigate('/nav/notebook/list');
-    //       break;
-    //     case '课外扩展':
-    //       navigate('/nav/branch2');
-    //       break;
-    //     case '写作':
-    //       // navigate('/nav/branch3');
-    //       // navigate('/nav/writing/input');
-    //       navigate('/nav/writing/list');
-    //       break;
-    //     case '错题积累':
-    //       navigate('/nav/branch4');
-    //       break;
-    //     case '复习':
-    //       navigate('/nav/branch5');
-    //       break;
-    //     case '试卷汇总':
-    //       navigate('/nav/branch6');
-    //       break;
-    //     default:
-    //       navigate('/nav/branch');
-    // }
       navigate('/nav/empty');
   };
 
   const handelSubjectManamementButton = () => {
     setBeforeSubject(false);
     navigate('/nav/manage');
-    // navigate('/nav/manage');
+  }
+
+  // 2024/6/29
+  const handleUserInfo=()=>{
+    setZpddyz(()=> {
+      const mjddyz={
+        username:localStorage.getItem('user'),
+        school:localStorage.getItem('school')==='primary'?'小学'
+              :localStorage.getItem('school')==='middle'?'初中':'高中',
+        grade:localStorage.getItem('grade') }
+      return mjddyz;
+    });
+    setVisible(true);
   }
 
   const onOpenChange = (openKeys) => {
@@ -180,7 +172,10 @@ export default function Nav () {
           </div>
           <div>
             <Tooltip title="当前用户信息">
-              <Button type="primary"  shape="circle" icon={<UserOutlined />} style={{ marginRight: '10px',backgroundColor:'#2529d8' }} />
+              <Button type="primary"  shape="circle" icon={<UserOutlined />} 
+              style={{ marginRight: '10px',backgroundColor:'#2529d8' }} 
+              onClick={handleUserInfo}
+              />
             </Tooltip>
             <Tooltip title="修改年级">
               <Button type="primary"  shape="circle" icon={<ToolOutlined />} style={{ marginRight: '10px',backgroundColor:'#2529d8' }} />
@@ -190,7 +185,10 @@ export default function Nav () {
               <Button type="primary"  shape="circle" icon={<CheckCircleOutlined />} style={{ marginRight: '10px',backgroundColor:'#2529d8' }} />
             </Tooltip>
             <Tooltip title="退出当前登录状态">
-              <Button type="primary"  shape="circle" icon={<LogoutOutlined />} style={{ marginRight: '10px',backgroundColor:'#2529d8' }} />
+              <Button type="primary"  shape="circle" icon={<LogoutOutlined />} 
+                style={{ marginRight: '10px',backgroundColor:'#2529d8' }}
+                onClick={()=>navigate('/logout')}
+              />
             </Tooltip>
           </div>
         </div>
@@ -210,6 +208,46 @@ export default function Nav () {
             {/* <RootLayout /> */}
           </Content>
           <Footer style={{ textAlign: 'center' }}>蚂蚁设计赋能©2024 Created by zackdson</Footer>
+          <Modal  
+            title="用户信息"  
+            open={visible} 
+            destroyOnClose
+            onCancel={()=>setVisible(false)}  
+            footer={null}  
+          >  
+            <Form  
+              name="userInfo"
+              initialValues={zpddyz}
+            >  
+              <Form.Item
+                name="username"
+                label="用户名"
+              >
+                <Input style={{color:'blue'}}  />
+              </Form.Item>
+
+              <Form.Item
+                name="school"
+                label="学校"
+              >
+                <Input  style={{color:'blue'}}  />
+              </Form.Item>
+
+              <Form.Item
+                name="grade"
+                label="年级"
+              >
+                <Input style={{color:'blue'}}/>
+              </Form.Item>
+                <Form.Item>  
+                  <Button type="primary" danger 
+                    style={{marginLeft:'15em'}}
+                    onClick={()=>setVisible(false)} >  
+                  OK
+                </Button>  
+              </Form.Item>  
+            </Form>  
+          </Modal>             
         </Layout>
       </Layout>
   )

@@ -11,16 +11,20 @@ export async function loader() {
     const resData=await GradeService.getGrade();
     const zpddyz=await resData.data;
     if (zpddyz)  {
-      localStorage.setItem('grade',zpddyz); //string school, int grade
+      localStorage.setItem('school',zpddyz.school); //string school, int grade
+      localStorage.setItem('grade',zpddyz.grade); //string school, int grade
       // 2024/6/25 first look at the initdson to verify the subject existing status
 
       return redirect('/nav');
       // return redirect('/nav');
+    }else{
+      openNotificationWithIcon("warning","发现您是新用户，初次使用需要设定年级情报");
+      return null;
     }
 
   }catch(err){
-    openNotificationWithIcon("error","数据库访问异常，请确认后台已经启动。或者请联系管理员");
-    return null;
+    openNotificationWithIcon("error","后台访问异常，请确认后台已经启动。或者请联系管理员");
+    return redirect('/');;
   }
 }
 
@@ -45,11 +49,11 @@ export default function HomePage() {
       async function updateDb(a,b) {
           try{
               await GradeService.saveGrade(a,b);
-              openNotificationWithIcon("success","设定成功。")
+              openNotificationWithIcon("success","年级设定成功。")
               setVisible(false);
               navigate('/nav/manage')
           }catch(err){
-              openNotificationWithIcon("error","设定失败!请联系管理员")
+              openNotificationWithIcon("error","年级设定失败!请联系管理员")
               return null;
           }
       }
@@ -59,7 +63,6 @@ export default function HomePage() {
 
   return (
     <>
-      <h1>蓝城市滨海区初高中学习辅助系统</h1>
       {/* 2024/6/18 此处改成handleclick方法，检索grade db,如果不存在，弹出modal设定 */}
       <Modal 
         title="年级确认"
@@ -104,6 +107,11 @@ export default function HomePage() {
                 >
                     <Button type="primary" danger htmlType="submit">
                     提交
+                    </Button>
+                    <Button type="primary" 
+                      style={{marginLeft:'1em'}}
+                      onClick={()=>navigate('/')}>
+                    退回重来
                     </Button>
                 </Form.Item>
              </Form>            

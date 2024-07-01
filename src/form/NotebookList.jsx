@@ -25,13 +25,14 @@ function NotebookList() {
         openNotificationWithIcon("error","删除课本记录异常,请联系管理员");
       }
     }
-    const editRecord = async ()=>{
-
+    const editRecord = (record)=>{
+      localStorage.setItem("notebookRecord",JSON.stringify(record));
+      navigate('/nav/notebook/edit');
     }
-    editRecord
+
     const columns = [
         {
-          title: '目录(点击此列某行查看详细)',
+          title: '目录(可点击)',
           dataIndex: 'num',
           key: 'num',
           // render: (text) => <span style={{color:'red'}}>{text}</span>,
@@ -39,7 +40,7 @@ function NotebookList() {
           render: (text, record) => {
             
             return <a onClick={()=>{
-                localStorage.setItem("NotebookRecord",JSON.stringify(record));
+                localStorage.setItem("notebookRecord",JSON.stringify(record));
                 navigate('/nav/notebook/detail');
             }}>
                 第{text}课
@@ -47,6 +48,10 @@ function NotebookList() {
             }
         },
         {
+          title: '主题',
+          dataIndex: 'keyword',
+          key: 'keyword',
+        },        {
           title: '照片',
           // dataIndex: 'mjddyz',
           key: 'photo',

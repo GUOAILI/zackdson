@@ -25,13 +25,13 @@ function ReviewList() {
         openNotificationWithIcon("error","删除复习记录异常,请联系管理员");
       }
     }
-    const editRecord = async ()=>{
-
+    const editRecord = (record)=>{
+      localStorage.setItem("reviewRecord",JSON.stringify(record));
+      navigate('/nav/review/edit');
     }
-    editRecord
     const columns = [
         {
-          title: '复习概要',
+          title: '复习概要(可点击)',
           dataIndex: 'title',
           key: 'title',
           // render: (text) => <span style={{color:'red'}}>{text}</span>,
@@ -46,6 +46,16 @@ function ReviewList() {
             </a>
             }
         },
+        {
+          title: '概要',
+          dataIndex: 'title',
+          key: 'title',
+        },        
+        {
+          title: '分类',
+          dataIndex: 'category',
+          key: 'category',
+        },        
         {
           title: '照片',
           // dataIndex: 'mjddyz',

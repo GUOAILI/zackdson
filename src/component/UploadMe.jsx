@@ -82,7 +82,7 @@ const UploadMe=(props,ref) =>{
         <ButtonZpd title='拍照' onClick={handleImageCapture} colorZpd={ButtonColor.colors4} />
         {uploadedImages.map((image) => (
         <>
-            <div key={image.name} style={{ position: 'relative', display: 'inline-block' }}>  
+            <div key={image.uid} style={{ position: 'relative', display: 'inline-block' }}>  
                 <img key={image.uid} src={image.url} alt={image.name} style={{ width: '100px', marginRight: '10px' }} />
             
                 {/* 使用 CloseOutlined 图标作为删除按钮，并镶嵌在图片右上角 */}  

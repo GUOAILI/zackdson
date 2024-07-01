@@ -16,7 +16,7 @@ import {
   Upload,
 } from 'antd';
 import React from 'react';
-import CustomWebcam from '../util/CustomWebcam';
+// import CustomWebcam from '../util/CustomWebcam';
 
 
 const { RangePicker } = DatePicker;
@@ -146,7 +146,7 @@ export default function SubjectExtLayout() {
                 </Form.Item>
             </Form>
             {/* 2024/06/12 */}
-            <CustomWebcam />
+            {/* <CustomWebcam /> */}
         </div>
     );
 }

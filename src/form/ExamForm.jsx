@@ -52,10 +52,11 @@ const ExamForm = () => {
       
   return (  
     <Form  
-      name="exam_form"  
+      name="exam_form"
       layout="vertical"
       initialValues={{ easy: 'medium' }}  
       onFinish={onFinish}
+      scrollToFirstError
     //   style={{ maxWidth: '400px' }}  
     >  
       <Form.Item  

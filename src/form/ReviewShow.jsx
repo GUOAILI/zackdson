@@ -12,7 +12,7 @@ const ReviewShow = () => {
     <>
     <Form 
       layout="vertical" 
-      // disabled
+      disabled
       initialValues={{
         title:cxddyz.title,
         reviewDate:cxddyz.reviewDate,

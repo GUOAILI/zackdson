@@ -18,20 +18,20 @@ function WrongList() {
 
     const deleteOneRecord = async (id)=>{
       try{
-        await TableService.delOneExam(id);
+        await TableService.delOneWrong(id);
         setXiaofang(x=>!x);
         openNotificationWithIcon("success","删除试卷记录成功");
       }catch(ex){
         openNotificationWithIcon("error","删除试卷记录异常,请联系管理员");
       }
     }
-    const editRecord = async ()=>{
-
+    const editRecord = (record)=>{
+      localStorage.setItem("wrongRecord",JSON.stringify(record));
+      navigate('/nav/wrong/edit');
     }
-    editRecord
     const columns = [
         {
-          title: '试题编号(点击此列某行查看详细)',
+          title: '试题编号(可点击)',
           dataIndex: 'dpjno',
           key: 'dpjno',
           // 跳转详情页
@@ -46,6 +46,10 @@ function WrongList() {
             }
         },
         {
+          title: '错题点',
+          dataIndex: 'point',
+          key: 'point',
+        },        {
           title: '照片',
           // dataIndex: 'mjddyz',
           key: 'photo',
@@ -56,11 +60,7 @@ function WrongList() {
           dataIndex: 'inputDate',
           key: 'inputDate',
         },
-        {
-          title: '背景',
-          dataIndex: 'back',
-          key: 'back',
-        },
+
         {
           title: '难易度',
           dataIndex: 'easy',

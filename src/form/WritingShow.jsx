@@ -13,9 +13,10 @@ const WritingShow = () => {
     <>
     <Form 
       layout="vertical" 
-      // disabled
+      disabled
       initialValues={{
         title:cxddyz.title,
+        topic:cxddyz.topic,
         sample:cxddyz.sample,
         comments:cxddyz.comments
       }}
@@ -26,7 +27,19 @@ const WritingShow = () => {
             题目
             </label>} 
         >
-        <Input />
+        <Input style={{color:'#a626aa'}} />
+      </Form.Item>
+      <Form.Item name="topic"
+       label={<label  style={{color:'blue'}}>
+            题材
+            </label>} >
+        <Select  mode="multiple" style={{ width: '30%' }}>  
+          <Select.Option value="记叙文">记叙文</Select.Option>  
+          <Select.Option value="说明文">说明文</Select.Option>  
+          <Select.Option value="抒情文">抒情文</Select.Option>  
+          <Select.Option value="议论文">议论文</Select.Option>  
+          <Select.Option value="应用文">应用文</Select.Option>  
+        </Select>  
       </Form.Item>
       <Form.Item name="sample" 
         // label="范文" 
@@ -36,6 +49,7 @@ const WritingShow = () => {
         >
         <TextArea 
             rows={10} 
+            style={{color:'#009f4d'}}
             // maxLength={1000} 
              />
       </Form.Item>
@@ -46,6 +60,7 @@ const WritingShow = () => {
                 </label>} 
         >
         <TextArea rows={4}
+          style={{color:'red'}}
          />
       </Form.Item>
     </Form>

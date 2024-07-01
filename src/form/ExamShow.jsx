@@ -12,7 +12,7 @@ const ExamShow = () => {
     <>
     <Form 
       layout="vertical" 
-      // disabled
+      disabled
       initialValues={{
         title:cxddyz.title,
         examDate:cxddyz.examDate,

@@ -1,23 +1,45 @@
-import React, { useRef } from 'react';
-import { Form, Input, Button, notification,Select } from 'antd';
+import React, {useState,useEffect,useRef} from 'react';
+import { Form, Input, Button, Select,Image,Checkbox,notification } from 'antd';
+import {useNavigate} from 'react-router-dom';
 import UploadMe from '../component/UploadMe';
-import FileService from '../util/fileService';
+import TableService from '../util/tableService';
 import base64ToFile from '../util/ImageTransformService';
 import moment from 'moment';
-import {useNavigate} from 'react-router-dom';
-
 const openNotificationWithIcon = (type, message, description) => notification[type]({message, description});
+
 const { TextArea } = Input;
 
-const WritingForm = () => {
-  const [form] = Form.useForm();
-  const zpddyz=useRef(null);
+const WritingEdit = () => {
   const navigate = useNavigate();
-  // const [uploadedFiles, setUploadedFiles] = useState([]);
-  // const [uploadedImages, setUploadedImages] = useState([]);
+  const [pjddyz,setPjddyz]=useState([]);
+  const zpddyz=useRef(null);
+  // const [form] = Form.useForm();
 
-  // Form submit handler
+  const cxddyz=JSON.parse(localStorage.getItem('writingRecord'));
+
+  useEffect(()=>{
+    setPjddyz(cxddyz.mjddyz.map((zpd)=>{
+        return {
+            name:zpd,
+            value:false
+        }
+      })
+    );
+  },[]);
+
+
   const onFinish = (values) => {
+    // console.log('form data is:',values);
+    // console.log('pjddyz:',pjddyz);
+    let delImages='';
+    for(let i=0;i<pjddyz.length;i++){
+      if (pjddyz[i].value===true){
+        delImages=delImages + pjddyz[i].name+',';
+      }
+    }
+    // console.log('delImages:',delImages);
+    
+    // return null;
     // Here you can handle form submission logic, e.g., send data to server
     const formData=new FormData();
     zpddyz.current.files.forEach((file)=>{
@@ -30,59 +52,58 @@ const WritingForm = () => {
         formData.append('files',base64ToFile(image.url),zpd_andom);
     });
     // 添加其他字段  
-    formData.append('imp', values.imp);  
+    formData.append('id', cxddyz.id);  
+    // formData.append('imp', values.imp);  
     formData.append('title', values.title);  
     formData.append('topic', values.topic);  
     formData.append('sample', values.sample);  
     formData.append('comments', values.comments);
+    // 2024/7/1 add for delete images, and subject is not nessesary for update so comment it.
+    formData.append('delImages', delImages);
     // a invisible variable that contains the key info of this page
-    formData.append('subject', localStorage.getItem("branchDetail"));
+    // formData.append('subject', localStorage.getItem("branchDetail"));
    
     //send http request to store files & images as well as save other info into database
     async function innerMethod(data){
         try{
-            await FileService.uploadFileAndSaveToWritingDb(data);
-            openNotificationWithIcon("success","上传成功!")
+            await TableService.updateWritingDb(data);
+            openNotificationWithIcon("success","写作数据更新成功!")
             navigate('/nav/writing/list')
         }catch(ex){
-            openNotificationWithIcon("error","上传失败!")
+            openNotificationWithIcon("error","写作数据更新失败!")
         }
     }    
     innerMethod(formData);
   };
 
   return (
-    <Form form={form} 
-      layout="vertical" 
+    <>
+    <Form 
+      // form={form} 
+      layout="vertical"
       onFinish={onFinish}
-      scrollToFirstError
+      // onFieldsChange={dpjLookat}
+      // onValuesChange={dpjSee}
+      // disabled
+      initialValues={{
+        title:cxddyz.title,
+        topic:cxddyz.topic,
+        sample:cxddyz.sample,
+        comments:cxddyz.comments
+      }}
       >
-      <Form.Item
-        // label="重要度" 
-        label={<label  style={{color:'blue'}}>
-                重要度
-                </label>} 
-        name="imp"  
-        rules={[{ required: true, message: '请选择重要度!' }]}  
-      >  
-        <Select placeholder="请选择重要度">  
-          <Select.Option value={3}>高</Select.Option>  
-          <Select.Option value={2}>中</Select.Option>  
-          <Select.Option value={1}>低</Select.Option>  
-        </Select>  
-      </Form.Item>        
       <Form.Item name="title"
+    //    label="题目"
        label={<label  style={{color:'blue'}}>
             题目
             </label>} 
-        rules={[{ required: true, message: '请输入题目' }]}>
-        <Input placeholder='输入作文题目' style={{ width: '30%' }} />
+        >
+        <Input />
       </Form.Item>
       <Form.Item name="topic"
        label={<label  style={{color:'blue'}}>
             题材
-            </label>} 
-        rules={[{ required: true, message: '请输入题材' }]}>
+            </label>} >
         <Select mode="multiple" style={{ width: '30%' }}>  
           <Select.Option value="记叙文">记叙文</Select.Option>  
           <Select.Option value="说明文">说明文</Select.Option>  
@@ -92,29 +113,51 @@ const WritingForm = () => {
         </Select>  
       </Form.Item>
       <Form.Item name="sample" 
-        // label="范文" 
         label={<label  style={{color:'blue'}}>
                 范文
                 </label>} 
-        rules={[{ required: true, message: '请输入范文' }]}>
-        <TextArea rows={30} 
-            maxLength={2000} 
-            showCount  
-            autoSize={{ minRows: 2, maxRows: 30 }}  
-              placeholder='手工输入,或者从网页上黏贴过来,上限2000字'
+        >
+        <TextArea 
+            rows={10} 
+            // maxLength={1000} 
              />
       </Form.Item>
       <Form.Item name="comments"
-    //    label="点评"
         label={<label  style={{color:'blue'}}>
                 点评
                 </label>} 
-        rules={[{ required: true, message: '请输入点评' }]}>
-        <TextArea rows={2} maxLength={100} placeholder='上限100字' />
+        >
+        <TextArea rows={4}
+         />
       </Form.Item>
-      <UploadMe ref={zpddyz} up_btn_txt="*范文上传(比如手机照片)" />
+      <hr />
+      <ul>
+        {cxddyz.mjddyz.length ? 
+        cxddyz.mjddyz.map((smap,index)=>(
+          <div key={smap} style={{ display:'flex',alignItems:'center'}}> 
+            <Image key={index} width={480} src={smap} />
+              <Checkbox 
+                // here is bery important
+                onChange={(e)=>{
+                    setPjddyz((oldzpd)=>{
+                      const newzpd=[...oldzpd];
+                      newzpd[index].value=!newzpd[index].value;
+                      return newzpd;
+                    });
+                }} 
+                style={{marginLeft:'3em',color:'red'}}
+                >
+                  勾选删除
+                </Checkbox> 
+          </div>
+        )) 
+                :
+            <p>没有附加图片</p>
+        }
+      </ul>
+      <hr />
+      <UploadMe ref={zpddyz} up_btn_txt="*追加文件,图片上传" />
       <hr/>
-      <Form.Item>
       <div style={{display:'flex',justifyContent:'center',paddingTop:'2em'}}>
         <Button type="primary" danger htmlType="submit" style={{ fontSize:'18px',width: '30%' }}>
             提交
@@ -126,9 +169,10 @@ const WritingForm = () => {
             取消
           </Button>
       </div>
-      </Form.Item>
     </Form>
+
+    </>
   );
 };
 
-export default WritingForm;
+export default WritingEdit;

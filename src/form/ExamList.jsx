@@ -16,6 +16,11 @@ function ExamList() {
     const [isLoading, setIsLoading]=useState(false);
     const subject=localStorage.getItem("branchDetail");
 
+
+    const editRecord = (record)=>{
+      localStorage.setItem("examRecord",JSON.stringify(record));
+      navigate('/nav/exam/edit');
+    }
     const deleteOneRecord = async (id)=>{
       try{
         await TableService.delOneExam(id);
@@ -25,13 +30,9 @@ function ExamList() {
         openNotificationWithIcon("error","删除试卷记录异常,请联系管理员");
       }
     }
-    const editRecord = async ()=>{
-
-    }
-    editRecord
     const columns = [
         {
-          title: '何种试卷(点击此列某行查看详细)',
+          title: '何种试卷(可点击)',
           dataIndex: 'title',
           key: 'title',
           // render: (text) => <span style={{color:'red'}}>{text}</span>,
@@ -45,6 +46,16 @@ function ExamList() {
                 {text}
             </a>
             }
+        },
+        {
+          title: '卷型',
+          dataIndex: 'examType',
+          key: 'examType',
+        },
+        {
+          title: '分数',
+          dataIndex: 'score',
+          key: 'score',
         },
         {
           title: '照片',

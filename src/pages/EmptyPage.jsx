@@ -1,4 +1,3 @@
-import SubjectLayout from "./SubjectBook";
 import { useNavigate } from "react-router-dom";
 import React,{ useEffect } from "react";
 const EmptyLayout = () =>{
@@ -11,7 +10,7 @@ const EmptyLayout = () =>{
           navigate('/nav/notebook/list');
           break;
         case '课外扩展':
-          navigate('/nav/branch2');
+          navigate('/nav/extension/list');
           break;
         case '写作':
           navigate('/nav/writing/list');

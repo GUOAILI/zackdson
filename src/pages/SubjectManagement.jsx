@@ -11,8 +11,8 @@ export async function action({ request }) {
     const subject = localStorage.getItem('subject');
     console.log("form data:",updates);
     if (Object.keys(updates).length < 1) {
-        openNotificationWithIcon("error","你至少要选择一个子分类!")
-        return null;
+        openNotificationWithIcon("warning","你没有选择任何子分类!主学科会从左侧菜单移除！")
+        // return null;
     }
     // 2024/6/13 thera are a lot of code try here to transform a array to anothre format
     // console.log("after reformat of update:",JSON.stringify(updates));
@@ -37,10 +37,10 @@ export async function action({ request }) {
     try{
         // await UserService.updateOneSubject(requestData);
         await UserService.updateOneInitDson(requestData);
-        openNotificationWithIcon("success","设定成功!")
+        openNotificationWithIcon("success",subject+" 设定成功!")
         return redirect("/nav/");
     }catch{
-        openNotificationWithIcon("error","设定失败!请联系管理员")
+        openNotificationWithIcon("error","科目管理后台更新失败!请联系管理员")
         return null;
     }
 }
@@ -54,6 +54,7 @@ export default function SubjectManagement() {
     const [nosubmit,setNoSubmit]=useState(true);
     const [zpddyz,setZpddyz]=useState(false);
     const [isSubChecked,setIsSubChecked]=useState(false);
+    const [arrzpd,setArrzpd]=useState([]);
 
     useEffect( ()=>{
         async function zpd(){
@@ -86,16 +87,23 @@ export default function SubjectManagement() {
                     let abc=null;
                     if (guoaili.data) abc=await JSON.parse(guoaili.data.allsub);
                     if (abc){
-                        let arrZpd=[];
-                        abc.forEach(aili=>{arrZpd.push(aili.label)});
+                        let arrZpdd=[];
+                        abc.forEach(aili=>{arrZpdd.push(aili.label)});
                         let arrLmj=[];
                         zhongguo.forEach(item=>{
-                            if(!arrZpd.includes(item.chname)){
+                            if(!arrZpdd.includes(item.chname)){
                                 arrLmj.push(item);
                             }
                         })
                         setXiaoguo(arrLmj);
                         setBranches(abc);
+                        setArrzpd(abc.map((zpd)=>{
+                            return {
+                                name:zpd.label,
+                                value:true
+                            }
+                        })
+                        )
                         // setIsSubChecked(true);
                         console.log('=SubjectManagment=after filter:',zhongguo);
                     }else{
@@ -128,7 +136,7 @@ export default function SubjectManagement() {
             <h1 style={{color:'red'}}>
                 学科增减管理
             </h1>
-            <h2>主学科</h2>
+            <h2 style={{color:'#537b35'}}>主学科 (请选择要添加的学科,每次只能设定一门)</h2>
             {subjects.length ? (
               <Form method="post" >
                   <ul style={{listStyle:'none'}}>
@@ -163,23 +171,33 @@ export default function SubjectManagement() {
                   {isSubChecked && (
                   <div>
                   <hr />
-                  <h2>子分类</h2>
-                  <h3>已经选过的子分类</h3>
+                  <h2 style={{color:'#537b35'}}>子分类</h2>
+                  <h3 style={{color:'#0389ff'}}>已经选过的子分类</h3>
                   {branches.length ? (
                     <div>
                         <ul style={{listStyle:'none'}}>
-                          {branches.map( sub => (
+                          {branches.map( (sub,idx) => (
                             <li key={sub.label}>
                                 <input 
                                     type="checkbox"
-                                    id={sub.label}
+                                    id={sub.label}s
                                     name={sub.label}
                                     value={sub.label}
-                                    checked
-                                    onChange={e=>{
-                                        e.target.checked=!e.target.checked
-                                        // setSubmittale(false);
-                                    }}
+                                    checked={arrzpd[idx].value}
+                                    onChange={(e)=>{
+                                        setArrzpd((oldzpd)=>{
+                                            const newzpd=[...oldzpd];
+                                            for(let i=0;i<newzpd.length;i++){
+                                                if(newzpd[i].name===e.target.value){
+                                                    newzpd[i].value=!newzpd[i].value;
+                                                }
+                                            }
+                                            return newzpd;
+                                        });
+                                        setNoSubmit(false);
+                                        // e.target.checked=!e.target.checked
+                                      }
+                                    }
                                     />
                                 <label  htmlFor={sub.label}>
                                     {sub.label}
@@ -196,7 +214,7 @@ export default function SubjectManagement() {
                     </div>
                 )
                 }
-                <h3>还没有选过的子分类</h3>
+                <h3 style={{color:'#0389ff'}}>还没有选过的子分类 (请勾选所有想添加的分类)</h3>
                 {xiaoguo.length ? 
                     (
                     <ul style={{listStyle:'none'}}>
