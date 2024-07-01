@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Menu,Button,Tooltip,Modal,Form,Input } from 'antd';
 const { Header, Content, Sider,Footer } = Layout;
-import { Outlet } from 'react-router-dom';
-import { useNavigate,useLoaderData } from 'react-router-dom';
+import { Outlet,useNavigate,useLoaderData,redirect } from 'react-router-dom';
 import UserService from '../util/userService';
 import { notification } from "antd";
 import { tokenLoader } from '../util/authentication';
@@ -46,8 +45,9 @@ export async function loader(){
 
     }catch(ex){
         // alert("主科目取得异常,请检查后端是否开启");
-        openNotificationWithIcon("error","主科目取得异常,请联系管理员");
-        return null;
+        // openNotificationWithIcon("error","主科目取得异常,请联系管理员");
+        openNotificationWithIcon("error","令牌过期，请重新登录");
+        return redirect('/');
     }
 }
 

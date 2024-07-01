@@ -117,7 +117,6 @@ const TableService = {
     getAllWriting,
     getAllNotebook,
     delOneWriting,
-    delOneExt,
     delOneNotebook,
     getAllExam,
     delOneExam,
