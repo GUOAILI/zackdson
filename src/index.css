@@ -1,0 +1,24 @@
+/* 2024/5/6 antd table style setting */
+.ant-table-thead > tr >th{
+    background: #e2c965  !important; 
+  }
+  .oddRow {
+    background: LightCyan;
+  }
+  /* 行样式2 */
+  .evenRow {
+    background: PowderBlue;
+  }
+  h1 {
+    color:#da1884
+  }
+  /* 2024/6/29 add */
+  .centered-container {  
+    display: flex;  
+    justify-content: center; /* 水平居中 */  
+  /*  align-items: center; /* 垂直居中（如果容器有高度） */  
+    height: 100vh; /* 假设您希望它占据整个视口的高度 */  
+    margin: 0;  
+    padding: 20px; /* 可选，增加一些内边距 */  
+    box-sizing: border-box; /* 包括内边距和边框在元素的总宽度和总高度内 */  
+  }

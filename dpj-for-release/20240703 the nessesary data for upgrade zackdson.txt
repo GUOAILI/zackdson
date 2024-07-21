@@ -1,0 +1,32 @@
+下面2个表需要删除重建
+subjects, branchs
+
+备份正确的表数据
+mysqldump -uroot -p123456 zack subjects > C:\zhoujd\java\project\react\zackdson_v1\zackdson\dpj-for-release\subjects.sql;
+mysqldump -uroot -p123456 zack branchs > C:\zhoujd\java\project\react\zackdson_v1\zackdson\dpj-for-release\branchs.sql;
+
+
+docker镜像源，比较新的
+"registry-mirrors": ["https://dockerhub.icu"]
+docker image build -t zjdcfx/hzp:v1 .
+
+docker run -d -p 9000:9000 --name zjdkchzp zjdcfx/hzp:v1
+docker run -d -p 9000:9000 --name zjdkclcx zjdcfx/hzp:v1
+
+\\wsl.localhost\docker-desktop-data\data\docker\overlay2\a16221888f67ab6dfe3e38c2bda200f5a561f156c3b4ea31d4aef12d975a930a\diff\uploads\2024-07-03
+\\wsl.localhost\docker-desktop-data\data\docker\overlay2\de7c0abb0589d31dd3be3bdf11d9e7ef06cde54d65b4af5e66300ef6a5ee95ec\diff\uploads\2024-07-03
+
+https://blog.csdn.net/weixin_46128463/article/details/120419340
+>mysql server workbench 手顺
+在点击query后，use zack;
+右键zack数据库，选择【set as Default Schema]
+
+ibm本ubuntu
+user:dpj
+psd:123
+
+ibm本重装ubuntu,docker是，提示wsl --update,但是修改注册表失败
+其实只要打开那个key，删除重建就可以了。
+https://www.cnblogs.com/airoot/p/8286804.html
+
+
